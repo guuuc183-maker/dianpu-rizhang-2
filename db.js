@@ -1,6 +1,6 @@
 // Firebase 数据层：登录、店铺、营业额记录（实时同步 + 离线缓存）、操作记录
 // 数据模型与 dianpu-rizhang 完全一致，可直接复用同一套 Firestore 安全规则。
-import { firebaseConfig } from './config.js';
+import { firebaseConfig } from './config.js?v=20261013b';
 import {
   initializeApp,
   initializeFirestore, persistentLocalCache, persistentMultipleTabManager,
@@ -10,7 +10,7 @@ import {
   initializeAuth, indexedDBLocalPersistence, browserLocalPersistence, browserPopupRedirectResolver,
   GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult,
   createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged
-} from './firebase.js';
+} from './firebase.js?v=20261013b';
 
 let db, auth;
 

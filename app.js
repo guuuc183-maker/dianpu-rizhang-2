@@ -1,5 +1,5 @@
 // 店铺日账 —— 主逻辑
-import * as DB from './db.js';
+import * as DB from './db.js?v=20261013b';
 
 const $ = id => document.getElementById(id);
 const views = ['v-loading', 'v-config', 'v-login', 'v-setup', 'v-main'];
