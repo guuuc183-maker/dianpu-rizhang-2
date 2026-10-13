@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>店铺日账</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="app">
+
+  <!-- 加载中 -->
+  <section id="v-loading" class="view">
+    <div class="center"><div class="logo">账</div><p>加载中…</p></div>
+  </section>
+
+  <!-- 配置缺失 -->
+  <section id="v-config" class="view" hidden>
+    <div class="card narrow">
+      <h2>还没配置</h2>
+      <p>请把 <code>config.js</code> 里的 Firebase 配置填好（从你原来的记账网站复制一份即可），然后重新部署。</p>
+    </div>
+  </section>
+
+  <!-- 登录 -->
+  <section id="v-login" class="view" hidden>
+    <div class="card narrow">
+      <div class="logo">账</div>
+      <h2>店铺日账</h2>
+      <p class="muted">多人共用 · 登录后记账</p>
+      <input id="login-email" type="email" placeholder="邮箱" autocomplete="email">
+      <input id="login-pw" type="password" placeholder="密码（至少6位）" autocomplete="current-password">
+      <div id="login-err" class="err" hidden></div>
+      <button id="btn-login" class="primary">登录</button>
+      <button id="btn-register" class="ghost">没有账号？注册一个</button>
+      <div class="divider"><span>或</span></div>
+      <button id="btn-google" class="ghost">用 Google 登录</button>
+    </div>
+  </section>
+
+  <!-- 建店 / 加入 -->
+  <section id="v-setup" class="view" hidden>
+    <div class="card narrow">
+      <h2>开始记账</h2>
+      <div class="tabs small">
+        <button id="tab-create" class="tab active">创建店铺</button>
+        <button id="tab-join" class="tab">用邀请码加入</button>
+      </div>
+      <div id="pane-create">
+        <input id="setup-shopname" placeholder="店铺名称（比如 videle 二店）">
+        <input id="setup-myname" placeholder="你的名字（记账时显示）">
+        <button id="btn-create" class="primary">创建店铺</button>
+      </div>
+      <div id="pane-join" hidden>
+        <input id="setup-code" placeholder="6位邀请码" maxlength="6" style="text-transform:uppercase">
+        <input id="setup-myname2" placeholder="你的名字（记账时显示）">
+        <button id="btn-join" class="primary">加入店铺</button>
+      </div>
+      <div id="setup-err" class="err" hidden></div>
+      <button id="btn-logout1" class="link">换个账号登录</button>
+    </div>
+  </section>
+
+  <!-- 主界面 -->
+  <section id="v-main" class="view" hidden>
+    <header>
+      <div>
+        <div id="shop-name" class="shop-name">店铺</div>
+        <div id="user-name" class="muted small"></div>
+      </div>
+      <button id="btn-logout2" class="iconbtn" title="退出登录">⎋</button>
+    </header>
+
+    <nav class="tabs">
+      <button id="mtab-record" class="tab active">记账</button>
+      <button id="mtab-summary" class="tab">每月总结</button>
+      <button id="mtab-shop" class="tab">店铺</button>
+    </nav>
+
+    <!-- 记账 -->
+    <div id="pane-record" class="pane">
+      <div class="card">
+        <div class="row">
+          <label>日期 <input id="rec-date" type="date"></label>
+        </div>
+        <div class="row2">
+          <label>现金 <input id="rec-cash" type="number" inputmode="decimal" placeholder="0"></label>
+          <label>刷卡 <input id="rec-card" type="number" inputmode="decimal" placeholder="0"></label>
+        </div>
+        <label>备注 <input id="rec-note" placeholder="可选"></label>
+        <div id="rec-err" class="err" hidden></div>
+        <div class="row btnrow">
+          <button id="btn-save" class="primary">保存</button>
+          <button id="btn-del" class="danger ghost" hidden>删除这天</button>
+        </div>
+        <div id="rec-savedby" class="muted small"></div>
+      </div>
+
+      <div class="card" id="card-yoy">
+        <h3>去年今日</h3>
+        <div id="yoy-body"><p class="muted">加载中…</p></div>
+      </div>
+
+      <div class="card">
+        <h3>最近记录</h3>
+        <div id="recent-list"></div>
+      </div>
+    </div>
+
+    <!-- 每月总结 -->
+    <div id="pane-summary" class="pane" hidden>
+      <div class="card">
+        <div class="row">
+          <label>月份 <input id="sum-month" type="month"></label>
+        </div>
+        <div class="statgrid">
+          <div class="stat"><div class="v" id="sum-total">–</div><div class="k">合计</div></div>
+          <div class="stat"><div class="v" id="sum-days">–</div><div class="k">记账天数</div></div>
+          <div class="stat"><div class="v" id="sum-avg">–</div><div class="k">日均</div></div>
+          <div class="stat"><div class="v" id="sum-best">–</div><div class="k">最高单日</div></div>
+        </div>
+        <div id="sum-compare" class="compare"></div>
+      </div>
+      <div class="card">
+        <h3>每日明细</h3>
+        <div id="chart" class="chart"></div>
+        <div id="sum-list"></div>
+      </div>
+    </div>
+
+    <!-- 店铺 -->
+    <div id="pane-shop" class="pane" hidden>
+      <div class="card">
+        <h3>邀请码</h3>
+        <div class="row">
+          <code id="shop-code" class="code">------</code>
+          <button id="btn-copycode" class="ghost small">复制</button>
+          <button id="btn-newcode" class="ghost small" hidden>换一个新的</button>
+        </div>
+        <p class="muted small">把邀请码发给店员，对方在登录后选「用邀请码加入」即可一起记账。</p>
+      </div>
+      <div class="card">
+        <h3>成员 <span id="member-count" class="muted small"></span></h3>
+        <div id="member-list"></div>
+      </div>
+      <div class="card" id="card-shops" hidden>
+        <h3>我的店铺</h3>
+        <div id="shop-list"></div>
+      </div>
+      <div class="card">
+        <button id="btn-leave" class="danger ghost">离开这家店铺</button>
+      </div>
+    </div>
+  </section>
+
+</div>
+<div id="toast" class="toast" hidden></div>
+<script type="module" src="app.js"></script>
+</body>
+</html>
